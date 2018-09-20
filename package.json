@@ -1,5 +1,5 @@
 {
-    "homepage": "https://github.com/jamesperrin/udacity-fend-myreads",
+    "homepage": "https://jamesperrin.github.io/udacity-fend-myreads/",
   "dependencies": {
     "gh-pages": "^2.0.0",
     "prop-types": "^15.6.1",
