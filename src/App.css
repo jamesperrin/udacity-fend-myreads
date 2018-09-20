@@ -161,7 +161,12 @@ body, .app {
   cursor: pointer;
 }
 
-/* book cover */
+.book-shelf-changer select>option:checked {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+  /* book cover */
 
 .book-cover {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
