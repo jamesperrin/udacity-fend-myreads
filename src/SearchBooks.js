@@ -6,7 +6,7 @@ import * as BooksAPI from './BooksAPI'
 class SearchBook extends Component{
     state = {
         query: '',
-        bookSeachList: []
+        bookSearchList: []
     }
 
     /**
@@ -16,9 +16,7 @@ class SearchBook extends Component{
     updateQuery = (query) => {
         this.setState({ query: query })
 
-        if (query.length >= 2) {
-            this.bookLookUp(this.state.query);
-        }
+        this.bookLookUp(query);
     }
 
     /**
@@ -28,13 +26,24 @@ class SearchBook extends Component{
      * @return {array} array - An array of book JSON objects
      */
     bookLookUp = (query) => {
-        BooksAPI.search(query).then((bookSeachList) => {
-            if (bookSeachList.error) {
-                this.setState({ bookSeach: [] });
-            } else {
-                this.setState({ bookSeachList });
-            }
-        });
+        if (query) {
+            BooksAPI.search(query).then(
+                response => {
+                    if (response.length > 0) {
+                        response.map(bookSearch => {
+                            this.props.readingList.map(readingBook => {
+                                if (bookSearch.id === readingBook.id) {
+                                    bookSearch.shelf = readingBook.shelf;
+                                }
+                            });
+                        })
+
+                        this.setState({ bookSearchList: response });
+                    }
+            });
+        }
+
+        this.setState({ bookSearchList: [] });
     }
 
     render() {
@@ -43,46 +52,24 @@ class SearchBook extends Component{
                 <div className="search-books-bar">
                     <Link to='/' className='close-search' title='Close' >Close</Link>
                     <div className="search-books-input-wrapper">
-                    {/*
-                    NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                    You can find these search terms here:
-                    https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                    However, remember that the BooksAPI.search method DOES search by title or author.
-                    So, don't worry if you don't find a specific author or title.
-                    Every search is limited by search terms.
-                    */}
                         <input type="text"
                             placeholder="Search by title or author"
                             value={this.state.query}
-                            onChange={(event) => this.updateQuery(event.target.value)} />
+                            onChange={(e) => { this.updateQuery(e.target.value) }}
+                        />
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
                         {
-                            this.state.bookSeachList.length === 0 &&
-                            (<li key="none">No results</li>)
-                        }
-
-                        {
-                            this.state.bookSeachList.length > 0 &&
-                            (this.state.bookSeachList.map(bookSeach => {
-                                this.props.readingList.map(readingBook => {
-                                    if (bookSeach.id === readingBook.id) {
-                                        bookSeach.shelf = readingBook.shelf;
-                                    }
-                                });
-
-                                return (
-                                    <li key={bookSeach.id}>
-                                        <Book book={bookSeach}
-                                            onBookMove={this.props.onBookMove}
-                                        />
-                                    </li>
-                                )
-                            }))
-
+                            this.state.bookSearchList.length === 0
+                                ? <li key="none" style={{fontSize: '1.5em'}}>No results to display</li>
+                                : this.state.bookSearchList
+                                    .map(bookSearch => (
+                                        <li key={bookSearch.id}>
+                                            <Book book={bookSearch} onBookMove={this.props.onBookMove} />
+                                        </li>)
+                                    )
                         }
                     </ol>
                 </div>
