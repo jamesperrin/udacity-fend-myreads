@@ -80,10 +80,8 @@ class BooksApp extends React.Component {
                 </div>
             )} />
 
-            <Route path='/search' render={({ history }) => (
-                <SearchBooks readingList={this.state.readingList} onBookMove={this.onBookMove} onSubmit={() => {
-                    history.push('/');
-                }} />
+            <Route path='/search' render={() => (
+                <SearchBooks readingList={this.state.readingList} onBookMove={this.onBookMove} />
             )} />
         </div>
     )
